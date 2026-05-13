@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>André Sousa — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Inconsolata:wdth,wght@100,600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f7f0;
+      --ink: #1a110e;
+      --yellow: #f5f155;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .page {
+      position: relative;
+      width: 1280px;
+      height: 832px;
+      background: var(--bg);
+      margin: 0 auto;
+      transform-origin: top center;
+    }
+
+    /* ── Signature / logo ── */
+    .signature {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 98px;
+      width: 161px;
+      height: 89px;
+    }
+    .signature img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* ── Photo card corner (top-right) ── */
+    /* Figma frame origin x=-100, so page_x = figma_x + 100 */
+
+    /* Group (photo): figma x=1168.09 y=89.76 w=127.18 h=126.65 */
+    .photo-group {
+      position: absolute;
+      left: calc(1168.09px + 100px);
+      top: 89.76px;
+      width: 127.18px;
+      height: 126.65px;
+    }
+    .photo-group img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Yellow signature: figma x=1199.70 y=81.93 w=94.47 h=61.73 */
+    .photo-signature {
+      position: absolute;
+      left: calc(1199.70px + 100px);
+      top: 81.93px;
+      width: 94.47px;
+      height: 61.73px;
+      pointer-events: none;
+    }
+    .photo-signature img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* Pin/needle: figma x=1305.19 y=64.20 w=109.46 h=94.84 */
+    .photo-pin {
+      position: absolute;
+      left: calc(1305.19px + 100px);
+      top: 64.20px;
+      width: 109.46px;
+      height: 94.84px;
+      pointer-events: none;
+    }
+    .photo-pin img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* ── Sketch doodles ── */
+    .doodle {
+      position: absolute;
+      pointer-events: none;
+    }
+    .doodle img { width: 100%; height: 100%; object-fit: contain; }
+
+    .doodle-triangle {  /* top-left triangle sketch */
+      left: 26.96px;
+      top: 86px;
+      width: 166.67px;
+      height: 182.42px;
+    }
+
+    .doodle-hat {       /* bottom-left hat/sail sketch */
+      left: calc(8.33% + 75.33px);
+      top: 506px;
+      width: 189.85px;
+      height: 169.29px;
+    }
+
+    .doodle-sail {      /* bottom-right sailboat sketch */
+      left: calc(75% + 4.12px);
+      top: 545.48px;
+      width: 214.55px;
+      height: 215.03px;
+    }
+
+    /* ── Scribble circle ── */
+    .scribble {
+      position: absolute;
+      left: 27.5%;
+      right: 27.14%;
+      top: 163px;
+      height: 577.33px;
+      pointer-events: none;
+    }
+    .scribble img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* ── Sticky note ── */
+    .sticky-wrap {
+      position: absolute;
+      left: 50%;
+      top: 261.24px;
+      transform: translateX(-50%);
+      width: 360.96px;
+      height: 366.96px;
+      pointer-events: none;
+    }
+    .sticky-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* ── Bottom links ── */
+    .links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 702px;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .links a {
+      font-family: 'Inconsolata', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      font-variation-settings: 'wdth' 100;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      transition: font-size 0.18s ease, transform 0.18s ease;
+    }
+
+    /* hand-drawn underline SVG — hidden by default */
+    .links a::after {
+      content: '';
+      display: block;
+      width: 110%;
+      height: 10px;
+      margin-top: 1px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cpath d='M2 7 C10 3, 22 9, 35 6 C48 3, 58 8, 72 5 C86 2, 98 8, 118 5' stroke='%231a110e' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+      opacity: 0;
+      transform: scaleX(0.7);
+      transition: opacity 0.18s ease, transform 0.22s ease;
+      transform-origin: left center;
+    }
+
+    .links a:hover {
+      font-size: 15px;
+      transform: rotate(2deg);
+    }
+    .links a:hover::after {
+      opacity: 1;
+      transform: scaleX(1) rotate(0deg);
+    }
+
+    /* ── Responsive scale (tablet / small desktop) ── */
+    @media (min-width: 561px) and (max-width: 1280px) {
+      .page {
+        transform: scale(calc(100vw / 1280));
+        transform-origin: top left;
+      }
+      body { overflow: hidden; }
+      html { height: calc(832px * (100vw / 1280)); }
+    }
+
+    /* ── Mobile layout ≤ 560px ── */
+    /* Based on Figma iPhone 13/14 frame: 390×844px */
+    @media (max-width: 560px) {
+      html {
+        height: calc(844px * (100vw / 390px));
+        overflow: visible;
+      }
+
+      body {
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      /* Scale the 390px Figma frame to fit the viewport */
+      .page {
+        width: 390px;
+        height: 844px;
+        transform: scale(calc(100vw / 390px));
+        transform-origin: top left;
+        margin: 0;
+        background: var(--bg);
+      }
+
+      html {
+        height: calc(844px * (100vw / 390px));
+      }
+
+      /* Signature: figma x=115 y=63 w=161 h=89 */
+      .signature {
+        position: absolute;
+        left: 115px;
+        top: 63px;
+        width: 161px;
+        height: 89px;
+        transform: none;
+      }
+
+      /* hide desktop-only elements */
+      .photo-group, .photo-signature, .photo-pin,
+      .doodle-triangle, .doodle-hat, .doodle-sail {
+        display: none;
+      }
+
+      /* Scribble: figma left=-24.36% right=-24.53% of 390px, top=133px, h=577.33px */
+      .scribble {
+        position: absolute;
+        left: calc(-24.36% * 3.9px);   /* -95px approx */
+        left: -95px;
+        right: -96px;
+        top: 133px;
+        width: auto;
+        height: 577px;
+        margin: 0;
+      }
+
+      /* Sticky: figma x=13 y=231.24 w=360.96 h=366.96 */
+      .sticky-wrap {
+        position: absolute;
+        left: 13px;
+        top: 231px;
+        width: 360.96px;
+        height: 366.96px;
+        transform: none;
+      }
+
+      /* Links: figma centre x=50%+1px, top=666px, stacked vertically gap=26px */
+      .links {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 666px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 26px;
+        width: 290px;
+      }
+
+      .links a { font-size: 14px; }
+      .links a:hover { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Signature -->
+    <div class="signature">
+      <img src="https://www.figma.com/api/mcp/asset/85a503cc-bee1-4fe6-9519-d726671964b6" alt="André Sousa" />
+    </div>
+
+    <!-- Photo card top-right (photo + yellow signature + pin) -->
+    <div class="photo-group">
+      <img src="https://www.figma.com/api/mcp/asset/84dd6235-0295-4129-8a1d-688dd24e6303" alt="André Sousa portrait" />
+    </div>
+    <div class="photo-signature">
+      <img src="https://www.figma.com/api/mcp/asset/f48ac71c-1abb-4e52-a2fc-52898b776452" alt="" />
+    </div>
+    <div class="photo-pin">
+      <img src="https://www.figma.com/api/mcp/asset/703613e9-0411-4cf7-a2ff-600dc71b3ec4" alt="" />
+    </div>
+
+    <!-- Triangle sketch top-left -->
+    <div class="doodle doodle-triangle">
+      <img src="https://www.figma.com/api/mcp/asset/ee10a1e0-b87e-4fa5-ba9f-86693866d1e8" alt="" />
+    </div>
+
+    <!-- Hat/sail sketch bottom-left -->
+    <div class="doodle doodle-hat">
+      <img src="https://www.figma.com/api/mcp/asset/a24e441f-6179-4148-8227-af61e27065b5" alt="" />
+    </div>
+
+    <!-- Sailboat sketch bottom-right -->
+    <div class="doodle doodle-sail">
+      <img src="https://www.figma.com/api/mcp/asset/ba574711-37ae-4afe-81ce-5e597c862a78" alt="" />
+    </div>
+
+    <!-- Scribble circle -->
+    <div class="scribble">
+      <img src="https://www.figma.com/api/mcp/asset/5c8f70d2-e229-4bc7-98e4-d34046513054" alt="" />
+    </div>
+
+    <!-- Sticky note (flattened Figma export) -->
+    <div class="sticky-wrap">
+      <img src="https://www.figma.com/api/mcp/asset/baa716d9-db8e-4ffd-938c-e85dfff23a58" alt="This Portfólio is under construction — I'm very sorry :(" />
+    </div>
+
+    <!-- Bottom links -->
+    <nav class="links">
+      <a href="https://drive.google.com/file/d/1u7oQinPGdti-H2xn-gF1KSderFixPcq8/view" target="_blank" rel="noopener">Portfólio.pdf</a>
+      <a href="https://www.behance.net/andresousaz" target="_blank" rel="noopener">Behance</a>
+      <a href="https://www.instagram.com/thisisandresousa" target="_blank" rel="noopener">Instagram</a>
+    </nav>
+
+  </div>
+</body>
+</html>
