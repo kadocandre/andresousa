@@ -1287,6 +1287,12 @@
         background: var(--ink);
         color: var(--yellow);
       }
+
+      /* Dark mode: yellow text by default, ink text on white bg on hover */
+      body.dark .hd-nav ul li a.link          { color: var(--yellow); }
+      body.dark .hd-nav ul li a.link:hover    { background: var(--white); color: var(--ink); }
+      body.dark .ft-socials a.link            { color: var(--yellow); }
+      body.dark .ft-socials a.link:hover      { background: var(--white); color: var(--ink); }
       /* Hide the old inline dark mode toggle row */
       .dark-mode-row { display: none; }
 
@@ -1334,6 +1340,9 @@
       }
       .ft-socials a.link:hover { transform: none; background: var(--ink); color: var(--yellow); }
 
+      /* Dark mode moon button: stays dark brown with light icon */
+      body.dark #mobile-dark-btn { background: #1a110e; color: #F7F7F0; }
+
       /* ── Disable custom cursor on mobile ── */
       * { cursor: auto !important; }
       #cursor { display: none !important; }
@@ -1346,7 +1355,7 @@
 
       /* ── Floating moon dark-mode button ── */
       #mobile-dark-btn {
-        display: flex;
+        display: flex !important;
       }
 
       /* ── Panels full screen ── */
