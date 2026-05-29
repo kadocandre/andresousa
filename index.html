@@ -775,16 +775,15 @@
       opacity: 0;
       transition: none; /* no transition on initial state */
       box-shadow:
-        0 2px 8px rgba(26,17,14,0.08),
-        0 10px 30px rgba(26,17,14,0.8);
+        0 2px 6px rgba(26,17,14,0.04),
+        0 8px 24px rgba(26,17,14,0.10);
     }
     body.dark .biz-card {
       background: #2a1f1b;
       border-color: rgba(247,247,240,0.1);
       box-shadow:
-        0 2px 8px rgba(0,0,0,0.3),
-        0 16px 48px rgba(0,0,0,0.5),
-        0 40px 80px rgba(0,0,0,0.4);
+        0 2px 8px rgba(0,0,0,0.12),
+        0 12px 32px rgba(0,0,0,0.18);
     }
     #card-overlay.open .biz-card {
       /* transition and transform are driven by JS openCard() for random rotation */
@@ -1359,16 +1358,45 @@
         border: none;
         bottom: auto;
         top: 0;
-        transform: translateX(0) translateY(100%) scale(1);
+        left: 0;
+        transform: translateY(100%) scale(1);
         transform-origin: top center;
+        box-shadow: none;
       }
       #archivepanel.open {
-        transform: translateX(0) translateY(0) scale(1);
+        transform: translateY(0) scale(1);
       }
 
-      /* Projects 1 col, archive 2 col */
-      .work-grid    { columns: 1; }
-      .archive-grid { columns: 2; }
+      /* Hide mac titlebar dots, keep close btn */
+      #archive-titlebar .mac-traffic-lights { display: none; }
+      #archive-titlebar .panel-title        { position: static; transform: none; }
+      #archive-titlebar {
+        justify-content: space-between;
+        padding: 12px 14px 8px;
+      }
+
+      /* Tighten archive scroll padding */
+      #archivepanel .panel-scroll {
+        padding: 10px 10px 24px;
+      }
+
+      /* Pinterest-style: 2 tight columns */
+      .archive-grid {
+        columns: 2;
+        column-gap: 8px;
+      }
+      .archive-card { margin-bottom: 8px; }
+
+      /* Pinterest rounded corners on archive cards */
+      .archive-card,
+      .archive-thumb-wrap,
+      .archive-thumb,
+      .archive-thumb-inner,
+      .archive-thumb-inner img,
+      .archive-thumb-inner svg { border-radius: 12px; overflow: hidden; }
+
+      /* Projects 1 col */
+      .work-grid { columns: 1; }
 
       /* About panel tweaks */
       .about-grid {
@@ -1393,7 +1421,7 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      z-index: 600;
+      z-index: 1100;
       width: 44px;
       height: 44px;
       border-radius: 50%;
