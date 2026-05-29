@@ -1042,6 +1042,9 @@
       text-transform: none;
     }
 
+    /* CV button: shown in mid col on desktop, moved to bottom of right col on 1-col layout */
+    .about-cv-bottom { display: none; }
+
     /* content reveal animation */
     .about-reveal {
       opacity: 0;
@@ -1179,7 +1182,8 @@
         grid-row: 3;
         padding: 0;
       }
-      .about-col-mid .badge.link { display: flex; width: fit-content; margin: 0 auto; }
+      .about-col-mid .badge.link { display: none; }
+      .about-cv-bottom { display: inline-flex; width: fit-content; margin: 0; }
       .about-col-right {
         grid-column: 1 / 2;
         grid-row: 4;
@@ -1327,6 +1331,10 @@
       }
       .ft-socials a.link:hover { transform: none; background: var(--ink); color: var(--yellow); }
 
+      /* ── Disable custom cursor on mobile ── */
+      * { cursor: auto !important; }
+      #cursor { display: none !important; }
+
       /* ── Badges in panels: bigger ── */
       .badge {
         font-size: var(--fs);
@@ -1347,8 +1355,15 @@
       #archivepanel {
         width: 100vw;
         border-radius: 0;
-        height: 100vh;
+        height: 100dvh;
         border: none;
+        bottom: auto;
+        top: 0;
+        transform: translateX(0) translateY(100%) scale(1);
+        transform-origin: top center;
+      }
+      #archivepanel.open {
+        transform: translateX(0) translateY(0) scale(1);
       }
 
       /* Projects 1 col, archive 2 col */
@@ -1501,6 +1516,8 @@
         <div class="about-block-label">[ELSEWHERE]</div>
         <p>You'll find ongoing experiments and process work on Instagram and Behance — fragments of things in motion, textures under construction.</p>
       </div>
+      <!-- CV button shown only in 1-col layout (≤1023px) -->
+      <a class="badge badge-dark link about-cv-bottom" onclick="openAboutLightbox()">ATS FRIENDLYㅤ<span class="badge-accent">CV↗</span></a>
     </div>
 
   </div>
