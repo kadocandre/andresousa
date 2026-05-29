@@ -22,7 +22,8 @@
       --wdth:   'wdth' 100;
       --margin: 20px;
       --gutter: 20px;
-      --fs:     12px;
+      --fs:     14px;
+      --fontexample: 12px;
       --panel-border: rgba(26,17,14,0.1);
     }
 
@@ -41,7 +42,7 @@
     body.dark .toggle                  { border-color: var(--white); }
     body.dark .toggle-knob             { transform: translateX(12px); background: var(--white); border-color: var(--white); }
     body.dark #projectpanel            { background: var(--bg); }
-    body.dark #archivepanel            { background: var(--bg); }
+    body.dark #archivepanel            { background: var(--bg); border-color: var(--panel-border); }
     body.dark .archive-img-name        { color: var(--bg); }
     body.dark .panel-header            { border-bottom-color: var(--panel-border); }
     body.dark .tag-filter-bar          { border-bottom-color: var(--panel-border); }
@@ -129,7 +130,7 @@
       align-items: center;
       padding: 0 3px;
       line-height: 1.5;
-      font-size: var(--fs);
+      font-size: var(--fontexample);
       font-weight: 600;
       font-variation-settings: var(--wdth);
       text-transform: uppercase;
@@ -183,8 +184,8 @@
     .hd-identity { grid-column: 1 / 3; }
     .hd-recent   { grid-column: 9 / 11; }
     .hd-nav      { grid-column: 11 / 12; }
-    .ft-utility  { grid-column: 1 / 3; }
-    .ft-socials  { grid-column: 11 / 12; }
+    .ft-utility  { grid-column: 2 / 4; }
+    .ft-socials  { grid-column: 11 / 11; }
 
     /* ── Identity ────────────────────────────────────────── */
     .hd-identity {
@@ -331,7 +332,7 @@
     }
     .tag-filter-btn {
       font-family: var(--font);
-      font-size: 11px;
+      font-size: var(--fontexample);
       font-weight: 600;
       font-variation-settings: var(--wdth);
       letter-spacing: 0.07em;
@@ -450,7 +451,7 @@
       display: inline-block;
       width: fit-content;
       font-family: var(--font);
-      font-size: 11px;
+      font-size: var(--fontexample);
       font-weight: 600;
       font-variation-settings: var(--wdth);
       letter-spacing: 0.04em;
@@ -472,25 +473,88 @@
     #project-backdrop.visible { display: block; }
 
     /* ════════════════════════════════════════════════════════
-       ARCHIVE PANEL — slides in from the left
+       ARCHIVE PANEL — Mac window, opens from bottom center
     ════════════════════════════════════════════════════════ */
     #archivepanel {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 90vw;
-      height: 100vh;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%) scale(0.88);
+      transform-origin: bottom center;
+      width: 85vw;
+      height: 95vh;
       background: var(--bg);
-      border-right: 1px solid var(--panel-border);
-      z-index: 400;
+      border-radius: 12px 12px 0 0;
+      border: 1px solid var(--panel-border);
+      border-bottom: none;
+      box-shadow:
+        0 -2px 0 rgba(0,0,0,0.02),
+        0 -8px 32px rgba(26,17,14,0.05),
+        0 -32px 80px rgba(26,17,14,0.1);
+      z-index: 1000;
       display: flex;
       flex-direction: column;
-      transform: translateX(-100%);
-      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: transform;
+      opacity: 0;
+      transition:
+        transform 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.35s ease;
+      will-change: transform, opacity;
       overflow: hidden;
     }
-    #archivepanel.open { transform: translateX(0); }
+    body.dark #archivepanel {
+      box-shadow:
+        0 -2px 0 rgba(255,255,255,0.04),
+        0 -8px 32px rgba(0,0,0,0.35),
+        0 -32px 80px rgba(0,0,0,0.5);
+    }
+    #archivepanel.open {
+      transform: translateX(-50%) translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    /* Mac-style traffic-light titlebar */
+    #archive-titlebar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 0;
+      gap: 10px;
+    }
+    .mac-traffic-lights {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+    .mac-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      position: relative;
+      transition: filter 0.15s;
+    }
+    .mac-dot-red   { background: #ff5f57; border: 0.5px solid rgba(0,0,0,0.12); }
+    .mac-dot-yellow{ background: #febc2e; border: 0.5px solid rgba(0,0,0,0.12); }
+    .mac-dot-green { background: #28c840; border: 0.5px solid rgba(0,0,0,0.12); }
+    .mac-dot:hover { filter: brightness(0.88); }
+
+    #archive-titlebar .panel-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    #archive-titlebar .panel-close {
+      font-size: var(--fs);
+    }
+
+    /* thin drag-bar line under traffic lights */
+    #archive-drag-bar {
+      flex: 0 0 auto;
+      height: 1px;
+      background: var(--panel-border);
+      margin: 10px 0 0;
+    }
 
     /* archive grid — 5 columns */
     .archive-grid {
@@ -547,7 +611,7 @@
       bottom: 6px;
       left: 8px;
       font-family: var(--font);
-      font-size: 9px;
+      font-size: var(--fontexample);
       font-weight: 600;
       font-variation-settings: var(--wdth);
       text-transform: uppercase;
@@ -559,6 +623,24 @@
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: calc(100% - 16px);
+    }
+
+    /* archive frosted overlay — fades in after ball-2 covers screen */
+    #archive-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background-image: url("download.webp");
+      background-size: 100vw 100vh;
+      background-position: center center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    #archive-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
     }
 
     /* archive backdrop */
@@ -574,7 +656,7 @@
     #archive-lightbox {
       position: fixed;
       inset: 0;
-      z-index: 600;
+      z-index: 1200;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -685,6 +767,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      align-items: center;
       position: relative;
       /* start: tiny + rotated, far above */
       transform: scale(3.2) translateY(-60px) rotate(0deg);
@@ -712,6 +795,7 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      align-items: center;
     }
     .biz-card-name {
       font-family: var(--font);
@@ -720,15 +804,19 @@
       text-transform: uppercase;
       color: var(--ink);
       letter-spacing: 0.02em;
+      text-align: center;
     }
     .biz-card-role {
       font-family: var(--font);
-      font-size: 10px;
-      background-color: var(--yellow);
+      font-size: var(--fontexample);
+      background-color: #1a110e;
       font-variation-settings: var(--wdth);
       text-transform: uppercase;
-      color: var(--ink);
+      color: #F7F7F0;
       letter-spacing: 0.1em;
+      padding: 2px 5px;
+      width: fit-content;
+      text-align: center;
     }
     .biz-card-bottom {
       display: flex;
@@ -741,12 +829,17 @@
       right: 28px;
       width: 4px;
       height: 48px;
-      background:;
+      background:none;
+    }
+
+    body.dark .biz-card-role {
+      background-color: #F7F7F0;
+      color: #1a110e;
     }
 
     #card-close-hint {
       font-family: var(--font);
-      font-size: 10px;
+      font-size: var(--fontexample);
       font-weight: 600;
       font-variation-settings: var(--wdth);
       text-transform: uppercase;
@@ -757,11 +850,13 @@
       transition: color 0.15s;
     }
     #card-close-hint:hover { color: var(--white); }
+    /* Mobile close hint (inside panel header) — hidden on desktop */
+    #card-close-hint-mobile { display: none; }
 
     /* close hint */
     #lightbox-close-hint {
       font-family: var(--font);
-      font-size: 10px;
+      font-size: var(--fontexample);
       font-weight: 600;
       font-variation-settings: var(--wdth);
       text-transform: uppercase;
@@ -771,6 +866,552 @@
     }
     #lightbox-close-hint:hover { color: var(--white); }
 
+
+    /* ════════════════════════════════════════════════════════
+       ABOUT — ball transition + overlay
+    ════════════════════════════════════════════════════════ */
+
+    /* The two expanding balls */
+    .about-ball {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 800;
+      transform: translate(-50%, -50%) scale(0);
+      will-change: transform;
+    }
+    .about-ball-1 {
+      background: var(--ink); /* dark brown */
+      transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .about-ball-2 {
+      background: var(--bg);
+      transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s;
+    }
+    .about-ball.expand {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .about-ball.collapse {
+      transform: translate(-50%, -50%) scale(0);
+    }
+
+    /* About overlay — 90vw panel sliding from left, same as other panels */
+    #about-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 90vw;
+      height: 100vh;
+      z-index: 850;
+      background: var(--bg);
+      border-right: 1px solid var(--panel-border);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    #about-overlay.visible {
+      transform: translateX(0);
+      pointer-events: all;
+    }
+
+    /* About panel header (same style as other panels) */
+    #about-overlay .panel-header {
+      flex: 0 0 auto;
+    }
+
+    /* 6-column grid for about content — fills remaining height, vertically centered */
+    .about-grid {
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: auto 1fr;
+      column-gap: var(--gutter);
+      row-gap: 28px;
+      padding: 0 var(--margin) var(--margin);
+      align-items: start;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(26,17,14,0.15) transparent;
+    }
+    .about-grid::-webkit-scrollbar { width: 4px; }
+    .about-grid::-webkit-scrollbar-thumb { background: rgba(26,17,14,0.15); border-radius: 0; }
+
+    /* Full-width title row — spans all 6 cols */
+    .about-col-headline {
+      grid-column: 1 / 7;
+      grid-row: 1;
+    }
+
+    /* Left 2 cols — photo */
+    .about-col-photo {
+      grid-column: 1 / 3;
+      grid-row: 2;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    /* ── PHOTO: change src="images/about-photo.jpg" to your image.
+          The container follows the image's natural ratio automatically. ── */
+    .about-photo-wrap {
+      width: 100%;
+      overflow: hidden;
+      background: rgba(26,17,14,0.06);
+    }
+    body.dark .about-photo-wrap { background: rgba(247,247,240,0.06); }
+    .about-photo-wrap img {
+      width: 100%;
+      height: auto;     /* natural ratio — no cropping */
+      display: block;
+    }
+    .about-photo-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--grey);
+      font-size: var(--fontexample);
+      letter-spacing: 0.08em;
+    }
+
+    /* Middle 2 cols — tags + who/what/currently */
+    .about-col-mid {
+      grid-column: 3 / 5;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    /* Right 2 cols — new text block */
+    .about-col-right {
+      grid-column: 5 / 7;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .about-headline {
+      font-family: var(--font);
+      font-size: clamp(24px, 100vw, 56px);
+      font-weight: 600;
+      font-variation-settings: var(--wdth);
+      text-transform: uppercase;
+      color: var(--ink);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+    .about-headline em {
+      font-style: normal;
+      background: var(--yellow);
+      padding: 0 6px;
+    }
+    body.dark .about-headline em { color: var(--bg); }
+
+    .about-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .about-skill-tag {
+      font-family: var(--font);
+      font-size: var(--fontexample);
+      font-weight: 600;
+      font-variation-settings: var(--wdth);
+      text-transform: uppercase;
+      border: 1px solid rgba(26,17,14,0.2);
+      padding: 3px 9px;
+      color: var(--ink);
+    }
+    body.dark .about-skill-tag { border-color: rgba(247,247,240,0.2); }
+
+    .about-block-label {
+      color: var(--grey);
+      margin-bottom: 6px;
+    }
+    .about-block p {
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: var(--fs);
+      text-transform: none;
+    }
+
+    /* content reveal animation */
+    .about-reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #about-overlay.visible .about-reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #about-overlay.visible .about-reveal:nth-child(1) { transition-delay: 0.1s; }
+    #about-overlay.visible .about-reveal:nth-child(2) { transition-delay: 0.15s; }
+    #about-overlay.visible .about-reveal:nth-child(3) { transition-delay: 0.2s; }
+    #about-overlay.visible .about-reveal:nth-child(4) { transition-delay: 0.25s; }
+    #about-overlay.visible .about-reveal:nth-child(5) { transition-delay: 0.3s; }
+
+    /* About lightbox */
+    #about-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 40px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #about-lightbox.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #about-lightbox::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 17, 14, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: -1;
+    }
+    body.dark #about-lightbox::before { background: rgba(0, 0, 0, 0.7); }
+    #about-lightbox-img-wrap {
+      max-height: 100vh;
+      overflow: hidden;
+      transform: scale(0.93) translateY(12px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.03s, opacity 0.3s ease 0.03s;
+      opacity: 0;
+    }
+    #about-lightbox.open #about-lightbox-img-wrap {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+    /* ↓↓ REPLACE IMAGE: change src on the img inside #about-lightbox-img-wrap ↓↓ */
+    #about-lightbox-img-wrap img {
+      width: 100%;
+      max-height: 75vh;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+    #about-lightbox-close-hint {
+      font-family: var(--font);
+      font-size: var(--fontexample);
+      font-weight: 600;
+      font-variation-settings: var(--wdth);
+      text-transform: uppercase;
+      color: rgba(247,247,240,0.5);
+      letter-spacing: 0.08em;
+      transition: color 0.15s;
+    }
+    #about-lightbox-close-hint:hover { color: var(--white); }
+    
+
+    /* backdrop for about panel */
+    #about-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 800;
+      display: none;
+    }
+    #about-backdrop.visible { display: block; }
+
+    /* ════════════════════════════════════════════════════════
+       BREAKPOINT — max-width 1023px
+    ════════════════════════════════════════════════════════ */
+    @media (max-width: 1023px) {
+      /* Base font size bump: +3px → 15px */
+      :root {
+        --fs: 17px;
+        --fontexample: 13px;
+      }
+      html, body { font-size: 17px; }
+
+      /* 5-column row grid */
+      .row {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      /* Re-map header columns onto 5-col grid */
+      .hd-identity { grid-column: 1 / 3; }
+      .hd-recent   { grid-column: 4 / 6; }
+      .hd-nav      { grid-column: 6 / 6; }
+
+      /* Re-map footer columns onto 5-col grid */
+      .ft-utility  { grid-column: 1 / 3; }
+      .ft-socials  { grid-column: 5 / 6; }
+
+      .archive-grid { columns: 3; }
+
+      /* Panels width → 80vw */
+      #projectpanel  { width: 80vw; }
+      #about-overlay { width: 80vw; }
+
+      /* About panel → 1 column: photo on top, then mid and right stacked */
+      .about-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+      }
+      .about-col-headline {
+        grid-column: 1 / 2;
+        grid-row: 1;
+      }
+      .about-col-photo {
+        grid-column: 1 / 2;
+        grid-row: 2;
+        max-width: 420px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .about-col-mid {
+        grid-column: 1 / 2;
+        grid-row: 3;
+        padding: 0;
+      }
+      .about-col-mid .badge.link { display: flex; width: fit-content; margin: 0 auto; }
+      .about-col-right {
+        grid-column: 1 / 2;
+        grid-row: 4;
+      }
+    }
+   /* ════════════════════════════════════════════════════════
+       BREAKPOINT — max-width 768px
+    ════════════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      /* Base font size bump: +6px over the base 12px → 18px */
+      :root {
+        --fs: 20px;
+        --fontexample: 12px;
+      }
+      html, body { font-size: 18px; }
+
+      /* Hide recent project div */
+      .hd-recent { display: none; }
+
+      /* Landing page: 3-column grid */
+      .row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      /* Re-map header columns onto 3-col grid */
+      .hd-identity { grid-column: 1 / 2; }
+      .hd-nav      { grid-column: 3 / 4; }
+
+      /* Re-map footer columns onto 3-col grid */
+      .ft-utility  { grid-column: 1 / 2; }
+      .ft-socials  { grid-column: 3 / 4; }
+
+      /* Panels width → 70vw */
+      #projectpanel  { width: 65vw; }
+      #about-overlay { width: 65vw; }
+
+      /* Projects panel → 2 columns */
+      .work-grid { columns: 2; }
+
+      /* Archive panel → 3 columns */
+      .archive-grid { columns: 2; }
+    }
+    
+    /* ════════════════════════════════════════════════════════
+       BREAKPOINT — max-width 576px  (mobile — linktree style)
+    ════════════════════════════════════════════════════════ */
+    @media (max-width: 576px) {
+      :root {
+        --fs: 16px;
+        --fontexample: 13px;
+        --margin: 20px;
+        --gutter: 12px;
+      }
+      html, body { font-size: 16px; }
+
+      /* ── Page: fixed full screen, flex column top→bottom ── */
+      .page {
+        height: 100dvh;
+        overflow: hidden;
+        padding: var(--margin);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      /* ── Hide desktop chrome ── */
+      .hd-recent  { display: none; }
+      .hd-hiring  { display: none; }
+      .hd-identity { display: none; }
+
+      /* ── Header: nav only, sits at top ── */
+      header.row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+      }
+
+      /* ── Nav becomes the linktree menu block at top ── */
+      .hd-nav {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      /* Each nav link → full-width bordered tap target */
+      .hd-nav ul {
+        list-style: none;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .hd-nav ul li { width: 100%; }
+      .hd-nav ul li a.link {
+        display: block;
+        width: 100%;
+        padding: 14px 20px;
+        border: 1px solid var(--panel-border);
+        text-align: center;
+        font-size: var(--fs);
+        letter-spacing: 0.06em;
+        transition: background 0.18s, color 0.18s;
+      }
+      .hd-nav ul li a.link:hover {
+        transform: none;
+        background: var(--ink);
+        color: var(--yellow);
+      }
+      /* Hide the old inline dark mode toggle row */
+      .dark-mode-row { display: none; }
+
+      /* ── Spacer: fills middle gap ── */
+      .page > div[style] { flex: 1 !important; }
+
+      /* ── Footer: socials only, pinned to bottom ── */
+      footer.row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
+      /* Hide all utility content */
+      .ft-utility { display: none; }
+
+      /* Socials block */
+      .ft-socials {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        padding-bottom: 0;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .ft-socials-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+      }
+      .ft-socials-group + .ft-socials-group { margin-top: 0; }
+      .ft-socials a.link {
+        display: block;
+        width: 100%;
+        padding: 12px 20px;
+        border: 1px solid var(--panel-border);
+        text-align: center;
+        font-size: var(--fs);
+        transition: background 0.18s, color 0.18s;
+      }
+      .ft-socials a.link:hover { transform: none; background: var(--ink); color: var(--yellow); }
+
+      /* ── Badges in panels: bigger ── */
+      .badge {
+        font-size: var(--fs);
+        padding: 8px 14px;
+      }
+
+      /* ── Floating moon dark-mode button ── */
+      #mobile-dark-btn {
+        display: flex;
+      }
+
+      /* ── Panels full screen ── */
+      #projectpanel,
+      #about-overlay {
+        width: 100vw;
+        border-right: none;
+      }
+      #archivepanel {
+        width: 100vw;
+        border-radius: 0;
+        height: 100vh;
+        border: none;
+      }
+
+      /* Projects 1 col, archive 2 col */
+      .work-grid    { columns: 1; }
+      .archive-grid { columns: 2; }
+
+      /* About panel tweaks */
+      .about-grid {
+        padding: 0 var(--margin) var(--margin);
+        row-gap: 20px;
+      }
+      .about-headline { font-size: clamp(22px, 8vw, 36px); }
+
+      /* Hide archive overlay on mobile */
+      #archive-overlay { display: none !important; }
+
+      /* Biz card: 50px bigger on mobile */
+      .biz-card {
+        width: min(320px, 88vw);
+      }
+
+    
+    }
+    /* ── Floating dark-mode moon button (mobile only) ───────── */
+    #mobile-dark-btn {
+      display: none; /* hidden on desktop */
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 600;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--white);
+      border: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 12px rgba(26,17,14,0.18);
+      transition: background 0.2s, color 0.2s, transform 0.18s;
+    }
+    #mobile-dark-btn:hover { transform: scale(1.1); }
+    #mobile-dark-btn svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+      stroke: currentColor;
+    }
+    body.dark #mobile-dark-btn {
+      background: var(--white);
+      color: var(--ink);
+    }
   </style>
 </head>
 <body>
@@ -778,6 +1419,104 @@
 
 <!-- Custom cursor -->
 <div id="cursor"></div>
+
+<!-- Mobile floating dark-mode button -->
+<button id="mobile-dark-btn" aria-label="Toggle dark mode" onclick="toggleDark()">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<!-- About transition balls -->
+<div id="about-ball-1" class="about-ball about-ball-1"></div>
+<div id="about-ball-2" class="about-ball about-ball-2"></div>
+
+<!-- ══ ABOUT LIGHTBOX ════════════════════════════════════════ -->
+<div id="about-lightbox" onclick="closeAboutLightbox()">
+  <!-- ↓↓ REPLACE IMAGE: change the src below to your desired lightbox image ↓↓ -->
+  <div id="about-lightbox-img-wrap">
+    <img src="images/about-lightbox.jpg" alt="About — take a look" onerror="this.style.display='none'" />
+  </div>
+  <span id="about-lightbox-close-hint">CLICK ANYWHERE OR PRESS ESC TO CLOSE</span>
+</div>
+
+<!-- About panel backdrop -->
+<div id="about-backdrop" onclick="closeAbout()"></div>
+
+<!-- ══ ABOUT OVERLAY ════════════════════════════════════════ -->
+<div id="about-overlay">
+
+  <!-- Panel header -->
+  <div class="panel-header">
+    <span class="panel-title grey">[ABOUT ME]</span>
+    <button class="panel-close link" onclick="closeAbout()">CLOSE ✕</button>
+  </div>
+
+  <!-- 6-column grid body -->
+  <div class="about-grid">
+
+    <!-- Full-width row: headline spanning all 6 cols -->
+    <div class="about-col-headline about-reveal">
+      <div class="about-headline">
+        Designer &amp; <em>Creative</em> Developer
+      </div>
+    </div>
+
+    <!-- Left 2 cols: photo -->
+    <div class="about-col-photo about-reveal">
+      <div class="about-photo-wrap">
+        <!-- ↓↓ REPLACE IMAGE: change the src below to your photo ↓↓ -->
+        <img src="images/about-photo.jpg" alt="André Sousa" onerror="this.outerHTML='<div class=\'about-photo-placeholder\'>[YOUR PHOTO]</div>'" />
+      </div>
+    </div>
+
+    <!-- Middle 2 cols: tags + who/what/currently -->
+    <div class="about-col-mid about-reveal">
+      <div class="about-skills">
+        <span class="about-skill-tag">Branding</span>
+        <span class="about-skill-tag">UI / UX</span>
+        <span class="about-skill-tag">Motion</span>
+        <span class="about-skill-tag">Typography</span>
+        <span class="about-skill-tag">Editorial</span>
+        <span class="about-skill-tag">Web Dev</span>
+        <span class="about-skill-tag">3D</span>
+        <span class="about-skill-tag">Creative Code</span>
+      </div>
+      <div class="about-block">
+        <div class="about-block-label">[WHO]</div>
+        <p>André Sousa — based in Porto, Portugal. I work at the intersection of design and code, crafting experiences that feel considered, precise, and alive.</p>
+      </div>
+      <div class="about-block">
+        <div class="about-block-label">[WHAT I DO]</div>
+        <p>Brand identity, interactive web, motion design, and UI/UX. I believe the best digital work is invisible in its craft and unmistakable in its feel.</p>
+      </div>
+      <div class="about-block">
+        <div class="about-block-label">[CURRENTLY]</div>
+        <p>Open for new collaborations. If you have a project that needs both sharp thinking and precise execution — let's talk.</p>
+        <br>
+        <a class="badge badge-dark link" onclick="openAboutLightbox()">ATS FRIENDLYㅤ<span class="badge-accent">CV↗</span></a>
+      </div>
+    </div>
+
+    <!-- Right 2 cols: additional text -->
+    <div class="about-col-right about-reveal">
+      <div class="about-block">
+        <div class="about-block-label">[APPROACH]</div>
+        <p>Every project starts with a question — what should this feel like? From there, everything follows: the type, the motion, the interaction. Detail is not decoration, it's intention.</p>
+      </div>
+      <div class="about-block">
+        <div class="about-block-label">[TOOLS]</div>
+        <p>Figma, After Effects, Cinema 4D, Framer, and a growing collection of custom code experiments. The tool is always secondary to the idea.</p>
+      </div>
+      <div class="about-block">
+        <div class="about-block-label">[ELSEWHERE]</div>
+        <p>You'll find ongoing experiments and process work on Instagram and Behance — fragments of things in motion, textures under construction.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
 
 <!-- Work panel backdrop -->
 <div id="project-backdrop" onclick="closePanel()"></div>
@@ -788,7 +1527,8 @@
     <div class="biz-card-accent"></div>
     <div class="biz-card-top">
       <div class="biz-card-name">André Sousa</div>
-      <div class="biz-card-role">Designer &amp; Creative Developer</div>
+      <div class="biz-card-role">Graphic Designer</div>
+      <span id="card-close-hint-mobile" onclick="closeCard()">CLOSE ✕</span>
     </div>
     <div class="ft-socials">
       <a href="mailto:euandrediogo@gmail.com" target="_blank" rel="noopener noreferrer" class="link">euandrediogo@gmail.com ↗</a>
@@ -812,13 +1552,23 @@
   <span id="lightbox-close-hint">CLICK ANYWHERE OR PRESS ESC TO CLOSE</span>
 </div>
 
+<!-- Archive frosted overlay -->
+<div id="archive-overlay" onclick="closeArchive()"></div>
+
 <!-- ══ ARCHIVE PANEL ════════════════════════════════════════ -->
 <div id="archive-backdrop" onclick="closeArchive()"></div>
 <div id="archivepanel">
-  <div class="panel-header">
-    <span class="panel-title grey">[MY ARCHIVE]</span>
+  <!-- Mac titlebar -->
+  <div id="archive-titlebar">
+    <div class="mac-traffic-lights">
+      <div class="mac-dot mac-dot-red"    onclick="closeArchive()" title="Close"></div>
+      <div class="mac-dot mac-dot-yellow" title="Minimise"></div>
+      <div class="mac-dot mac-dot-green"  title="Full screen"></div>
+    </div>
+    <span class="panel-title grey">[CREATIVE ARCHIVE]</span>
     <button class="panel-close link" onclick="closeArchive()">CLOSE ✕</button>
   </div>
+  <div id="archive-drag-bar"></div>
   <div class="panel-scroll">
     <div class="archive-grid" id="archiveGrid"></div>
   </div>
@@ -873,9 +1623,9 @@
       <span class="grey">MENU ↓</span>
       <ul>
         <li><a href="#" class="link" onclick="openPanel(); return false;">PROJECTS</a></li>
-        <li><a href="#" class="link" onclick="openArchive(); return false;">MY ARCHIVE</a></li>
+        <li><a href="#" class="link" id="archive-btn" onclick="openArchiveWithBall(event); return false;">CREATIVE ARCHIVE</a></li>
         <li><a href="#" class="link" onclick="openCard(); return false;">CONTACT</a></li>
-        <li><a href="#" class="link">ABOUT</a></li>
+        <li><a href="#" class="link" onclick="openAbout(); return false;">ABOUT</a></li>
       </ul>
       <div class="dark-mode-row">
         <span>DARK MODE</span>
@@ -929,6 +1679,12 @@
     localStorage.setItem('darkMode', isDark ? 'on' : 'off');
   }
 
+  /* ── Element refs (declared early so all functions can use them) ── */
+  const cursorEl      = document.getElementById('cursor');
+  const aboutOverlay  = document.getElementById('about-overlay');
+  const aboutBall1    = document.getElementById('about-ball-1');
+  const aboutBall2    = document.getElementById('about-ball-2');
+
   /* ── Work panel ────────────────────────────────────────── */
   /* ── Project panel ─────────────────────────────────────── */
   const projectpanel  = document.getElementById('projectpanel');
@@ -959,20 +1715,15 @@
     if (cardOpen) return;
     cardOpen = true;
     cursorEl.classList.remove('hover-link');
-    /* Pick a random landing rotation between -30 and 30 degrees */
     const rot = (Math.random() * 30 - 15).toFixed(1);
-    /* Reset card to start position */
     bizCard.style.transition = 'none';
     bizCard.style.transform  = 'scale(3.2) translateY(-60px) rotate(0deg)';
     bizCard.style.opacity    = '0';
-    /* Force reflow */
     bizCard.getBoundingClientRect();
-    /* Animate to final position with random rotation */
     bizCard.style.transition = 'transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.35s ease';
     bizCard.style.transform  = `scale(1) translateY(0) rotate(${rot}deg)`;
     bizCard.style.opacity    = '1';
     cardOverlay.classList.add('open');
-
   }
 
   function closeCard() {
@@ -984,20 +1735,117 @@
 
   const archivepanel    = document.getElementById('archivepanel');
   const archiveBackdrop = document.getElementById('archive-backdrop');
+  const archiveOverlay  = document.getElementById('archive-overlay');
   let archiveOpen       = false;
+
+  function openArchiveWithBall(e) {
+    if (archiveOpen) return;
+    archiveOpen = true;
+    cursorEl.classList.remove('hover-link');
+
+    /* Get button position so balls originate from it */
+    const btn = document.getElementById('archive-btn');
+    const rect = btn.getBoundingClientRect();
+    const originX = rect.left + rect.width / 2;
+    const originY = rect.top  + rect.height / 2;
+
+    /* Size = diagonal of the screen so ball fully covers it */
+    const size = Math.ceil(Math.hypot(window.innerWidth, window.innerHeight) * 2.1);
+
+    [aboutBall1, aboutBall2].forEach(ball => {
+      ball.style.width     = size + 'px';
+      ball.style.height    = size + 'px';
+      ball.style.left      = originX + 'px';
+      ball.style.top       = originY + 'px';
+      ball.classList.remove('expand');
+    });
+
+    aboutBall1.getBoundingClientRect();
+    aboutBall2.getBoundingClientRect();
+
+    aboutBall1.classList.add('expand');
+    aboutBall2.classList.add('expand');
+
+    /* ball-2 transition = 0.7s + 0.3s delay = finishes at ~1000ms */
+    /* Start fading in overlay right as ball-2 covers screen (≈ 1000ms) */
+    setTimeout(() => {
+      /* Shrink balls away */
+      aboutBall1.classList.remove('expand');
+      aboutBall2.classList.remove('expand');
+      /* Fade in frosted overlay */
+      archiveOverlay.classList.add('visible');
+      archiveBackdrop.classList.add('visible');
+    }, 950);
+
+    /* 0.3s after overlay starts fading in → open panel from bottom */
+    setTimeout(() => {
+      archivepanel.classList.add('open');
+    }, 950 + 300);
+  }
 
   function openArchive() {
     if (archiveOpen) return;
     archiveOpen = true;
     archivepanel.classList.add('open');
     archiveBackdrop.classList.add('visible');
+    archiveOverlay.classList.add('visible');
     cursorEl.classList.remove('hover-link');
   }
   function closeArchive() {
     if (!archiveOpen) return;
     archiveOpen = false;
+
+    /* Close lightbox first if open */
+    closeLightbox();
+
+    /* Re-position balls at the archive button origin — same anchor as open */
+    const btn = document.getElementById('archive-btn');
+    const rect = btn.getBoundingClientRect();
+    const originX = rect.left + rect.width / 2;
+    const originY = rect.top  + rect.height / 2;
+    const size = Math.ceil(Math.hypot(window.innerWidth, window.innerHeight) * 2.1);
+
+    /* Place balls at full size (already covering the screen), no transition */
+    [aboutBall1, aboutBall2].forEach(ball => {
+      ball.style.width      = size + 'px';
+      ball.style.height     = size + 'px';
+      ball.style.left       = originX + 'px';
+      ball.style.top        = originY + 'px';
+      ball.style.transition = 'none';
+      ball.classList.remove('expand', 'collapse');
+    });
+
+    /* Slide panel down and fade out overlay immediately */
     archivepanel.classList.remove('open');
-    archiveBackdrop.classList.remove('visible');
+    archiveOverlay.classList.remove('visible');
+
+    /* Force reflow — commit no-transition + no-class state */
+    aboutBall1.getBoundingClientRect();
+    aboutBall2.getBoundingClientRect();
+
+    /* Snap balls to scale(1) without animating */
+    aboutBall1.classList.add('expand');
+    aboutBall2.classList.add('expand');
+
+    /* Force reflow — commit the expanded state */
+    aboutBall1.getBoundingClientRect();
+    aboutBall2.getBoundingClientRect();
+
+    /* Now animate collapse: ball-2 (bg, was on top) collapses first,
+       ball-1 (dark) follows 0.3s later — inverse of the open stagger */
+    aboutBall2.style.transition = 'transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1)';
+    aboutBall1.style.transition = 'transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s';
+    aboutBall1.classList.replace('expand', 'collapse');
+    aboutBall2.classList.replace('expand', 'collapse');
+
+    /* After both have fully collapsed (~1100ms), clean up */
+    setTimeout(() => {
+      aboutBall1.classList.remove('collapse');
+      aboutBall2.classList.remove('collapse');
+      aboutBall1.style.transition = '';
+      aboutBall2.style.transition = '';
+      archiveBackdrop.classList.remove('visible');
+    }, 1100);
   }
 
   /* ── Archive lightbox ──────────────────────────────────── */
@@ -1018,9 +1866,43 @@
     lightbox.classList.remove('open');
   }
 
-  /* Escape key closes whichever panel is open */
+  /* ── About overlay ─────────────────────────────────────── */
+  let aboutOpen      = false;
+  let aboutLightboxOpen = false;
+  const aboutBackdrop = document.getElementById('about-backdrop');
+
+  function openAbout() {
+    if (aboutOpen) return;
+    aboutOpen = true;
+    cursorEl.classList.remove('hover-link');
+    aboutOverlay.classList.add('visible');
+    aboutBackdrop.classList.add('visible');
+  }
+
+  function closeAbout() {
+    if (!aboutOpen) return;
+    aboutOpen = false;
+    aboutOverlay.classList.remove('visible');
+    aboutBackdrop.classList.remove('visible');
+  }
+
+  function openAboutLightbox() {
+    if (aboutLightboxOpen) return;
+    aboutLightboxOpen = true;
+    document.getElementById('about-lightbox').classList.add('open');
+  }
+
+  function closeAboutLightbox() {
+    if (!aboutLightboxOpen) return;
+    aboutLightboxOpen = false;
+    document.getElementById('about-lightbox').classList.remove('open');
+  }
+
+  /* Escape key also closes about */
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closePanel(); closeArchive(); closeLightbox(); closeCard(); }
+    if (e.key === 'Escape') {
+      closePanel(); closeArchive(); closeLightbox(); closeCard(); closeAbout(); closeAboutLightbox();
+    }
   });
 
   /* ── Project data ──────────────────────────────────────── */
@@ -1267,7 +2149,6 @@
   });
 
   /* ── Custom cursor ──────────────────────────────────────── */
-  const cursorEl = document.getElementById('cursor');
   let cursorGrowTimer = null;
 
   document.addEventListener('mousemove', e => {
@@ -1284,7 +2165,9 @@
   function isHomepage() {
     return !projectpanel.classList.contains('open') &&
            !archivepanel.classList.contains('open') &&
-           !cardOpen;
+           !cardOpen &&
+           !aboutOpen &&
+           !aboutLightboxOpen;
   }
 
   document.addEventListener('mouseover', e => {
