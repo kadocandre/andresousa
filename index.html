@@ -276,7 +276,7 @@
       top: 0;
       left: 0;
       width: 90vw;
-      height: 100vh;
+      height: 100dvh;
       background: var(--bg);
       border-right: 1px solid var(--panel-border);
       z-index: 400;
@@ -362,6 +362,8 @@
       padding: 24px var(--margin) 40px;
       scrollbar-width: thin;
       scrollbar-color: rgba(26,17,14,0.15) transparent;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
     }
     .panel-scroll::-webkit-scrollbar { width: 4px; }
     .panel-scroll::-webkit-scrollbar-thumb { background: rgba(26,17,14,0.15); border-radius: 0; }
@@ -900,7 +902,7 @@
       top: 0;
       left: 0;
       width: 90vw;
-      height: 100vh;
+      height: 100dvh;
       z-index: 850;
       background: var(--bg);
       border-right: 1px solid var(--panel-border);
@@ -935,6 +937,8 @@
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: rgba(26,17,14,0.15) transparent;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
     }
     .about-grid::-webkit-scrollbar { width: 4px; }
     .about-grid::-webkit-scrollbar-thumb { background: rgba(26,17,14,0.15); border-radius: 0; }
@@ -1400,10 +1404,15 @@
 
       /* About panel tweaks */
       .about-grid {
-        padding: 0 var(--margin) var(--margin);
+        padding: 0 var(--margin) calc(var(--margin) + env(safe-area-inset-bottom, 24px));
         row-gap: 20px;
       }
       .about-headline { font-size: clamp(22px, 8vw, 36px); }
+
+      /* Extra bottom padding so content clears mobile browser chrome */
+      .panel-scroll {
+        padding-bottom: calc(40px + env(safe-area-inset-bottom, 24px));
+      }
 
       /* Hide archive overlay on mobile */
       #archive-overlay { display: none !important; }
