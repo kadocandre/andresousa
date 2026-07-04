@@ -385,6 +385,11 @@
       })
       .catch(function(err){
         console.error('about.html: could not load content.json', err);
+      })
+      .finally(function(){
+        // whether it succeeded or failed, .about is now in its final
+        // state — safe to fade it up without a height change mid-transition
+        if (window.__revealAboutSection) window.__revealAboutSection();
       });
   })();
 </script>
@@ -398,15 +403,35 @@
   var els = Array.prototype.slice.call(document.querySelectorAll('header, .intro, main > *, footer.spacer > *'));
   if (!els.length) return;
   els.forEach(function(el){ el.classList.add('reveal-item'); });
-  // double rAF so the transition-delay is committed before we flip opacity
-  requestAnimationFrame(function(){
+
+  // .about gets its bio text (and sometimes the portrait image) swapped in
+  // asynchronously from content.json. Fading it up on the normal schedule
+  // risks that swap landing mid-transition and changing its height under
+  // the animation, which looks like a jump — so it's held back until the
+  // content loader script above says the swap has already happened.
+  var aboutEl = document.querySelector('.about');
+  var immediateEls = els.filter(function(el){ return el !== aboutEl; });
+
+  function reveal(list, baseIndex){
+    // double rAF so the transition-delay is committed before we flip opacity
     requestAnimationFrame(function(){
-      els.forEach(function(el, i){
-        el.style.transitionDelay = Math.min(i * 110, 550) + 'ms';
-        el.classList.add('is-in');
+      requestAnimationFrame(function(){
+        list.forEach(function(el, i){
+          el.style.transitionDelay = Math.min((baseIndex + i) * 110, 550) + 'ms';
+          el.classList.add('is-in');
+        });
       });
     });
-  });
+  }
+
+  reveal(immediateEls, 0);
+
+  if (aboutEl){
+    window.__revealAboutSection = function(){
+      if (aboutEl.classList.contains('is-in')) return;
+      reveal([aboutEl], immediateEls.length);
+    };
+  }
 })();
 </script>
 <!-- ============ END PAGE ENTRANCE ANIMATION ============ -->

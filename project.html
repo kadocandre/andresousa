@@ -318,6 +318,7 @@
   }
 
   var id = getProjectId();
+  window.__projectStaticFallback = (id === null);
   if (id === null) return; // no ?id= — leave the static example content as-is
 
   fetch('content.json')
@@ -341,6 +342,12 @@
       // files in that case. Serve the folder (e.g. `python3 -m http.server`
       // or a "Live Server" extension) and reload. Meanwhile, the page keeps
       // showing its static example content rather than going blank.
+    })
+    .finally(function(){
+      // whatever happened above (success, project-not-found, or fetch
+      // failure), the sections that were held back are now in their final
+      // state — safe to fade them up without a height change mid-transition
+      if (window.__revealProjectAsync) window.__revealProjectAsync();
     });
 })();
 </script>
@@ -355,15 +362,44 @@
   var els = Array.prototype.slice.call(document.querySelectorAll('header, .intro, main > *, footer.spacer > *'));
   if (!els.length) return;
   els.forEach(function(el){ el.classList.add('reveal-item'); });
-  // double rAF so the transition-delay is committed before we flip opacity
-  requestAnimationFrame(function(){
+
+  // .overview / .gallery-section / .pull have their content swapped in
+  // asynchronously by the PROJECT DATA LOADER above (real text/images
+  // replacing the static placeholder). If we fade+translate them in on
+  // the normal schedule, that swap can land mid-transition and change
+  // their height under the animation, producing a visible jump. So we
+  // hold these back and only fade them in once the loader tells us the
+  // swap (or the decision not to swap) has already happened.
+  var asyncSelectors = ['.overview', '.gallery-section', '.pull'];
+  var asyncEls = els.filter(function(el){
+    return asyncSelectors.some(function(sel){ return el.matches(sel); });
+  });
+  var immediateEls = els.filter(function(el){ return asyncEls.indexOf(el) === -1; });
+
+  function reveal(list, baseIndex){
+    // double rAF so the transition-delay is committed before we flip opacity
     requestAnimationFrame(function(){
-      els.forEach(function(el, i){
-        el.style.transitionDelay = Math.min(i * 110, 550) + 'ms';
-        el.classList.add('is-in');
+      requestAnimationFrame(function(){
+        list.forEach(function(el, i){
+          el.style.transitionDelay = Math.min((baseIndex + i) * 110, 550) + 'ms';
+          el.classList.add('is-in');
+        });
       });
     });
-  });
+  }
+
+  reveal(immediateEls, 0);
+
+  if (window.__projectStaticFallback) {
+    // no ?id= in the URL — nothing will ever populate these sections
+    // asynchronously, so fade them in right away with everything else
+    reveal(asyncEls, immediateEls.length);
+  } else {
+    window.__revealProjectAsync = function(){
+      if (!asyncEls.length || asyncEls[0].classList.contains('is-in')) return;
+      reveal(asyncEls, immediateEls.length);
+    };
+  }
 })();
 </script>
 <!-- ============ END PAGE ENTRANCE ANIMATION ============ -->
