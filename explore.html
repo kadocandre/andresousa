@@ -760,29 +760,5 @@ window.addEventListener('resize', () => {
 })();
 </script>
 
-<!-- ============ PAGE ENTRANCE ANIMATION ============ -->
-<!-- Subtle fade-up on every load: header, board viewport, and the zoom       -->
-<!-- toolbar rise ~16px into place with a short stagger. Reuses the same      -->
-<!-- reveal-item/is-in classes (and reduced-motion handling) as index.html.   -->
-<!-- Targets the fixed .viewport wrapper rather than the draggable #board    -->
-<!-- itself, since #board already owns its own transform for panning/zoom.   -->
-<script>
-(function(){
-  var els = Array.prototype.slice.call(document.querySelectorAll('header, #viewport, .toolbar:not(.overlay__zoom-controls)'));
-  if (!els.length) return;
-  els.forEach(function(el){ el.classList.add('reveal-item'); });
-  // double rAF so the transition-delay is committed before we flip opacity
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      els.forEach(function(el, i){
-        el.style.transitionDelay = Math.min(i * 110, 550) + 'ms';
-        el.classList.add('is-in');
-      });
-    });
-  });
-})();
-</script>
-<!-- ============ END PAGE ENTRANCE ANIMATION ============ -->
-
 </body>
 </html>
