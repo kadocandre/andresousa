@@ -617,41 +617,6 @@
   }
   /* ============ END LOADING SCREEN ============ */
 
-  /* ============ CONTENT REVEAL (fade-up entrance on every load) ============ */
-  .reveal-item{
-    opacity: 0;
-    transform: translateY(48px) scale(.97);
-    transition: opacity 800ms cubic-bezier(.16,1,.3,1),
-                transform 800ms cubic-bezier(.16,1,.3,1);
-    will-change: opacity, transform;
-  }
-  .reveal-item.is-in{
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  .reveal-item.instant{
-    transition: none !important;
-  }
-  /* header keeps the fade but not the translate/will-change: transform, since       */
-  /* those make header a "containing block" for its fixed-position mobile nav      */
-  /* overlay, which was trapping the menu inside header's own thin bar instead of  */
-  /* letting it cover (and center on) the full screen.                             */
-  header.reveal-item{
-    transform: none;
-    will-change: opacity;
-  }
-  header.reveal-item.is-in{
-    transform: none;
-  }
-  @media (prefers-reduced-motion: reduce){
-    .reveal-item{
-      opacity: 1 !important;
-      transform: none !important;
-      transition: none !important;
-    }
-  }
-  /* ============ END CONTENT REVEAL ============ */
-
   /* ---------- PROJECT PAGE ---------- */
   .page-project .intro{
     position:relative;

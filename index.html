@@ -738,28 +738,6 @@
     cols.push(col);
   }
 
-  // ---- content reveal: page starts empty, fades up once the curtain lifts ----
-  var revealEls = [].slice.call(document.querySelectorAll('header, .intro, .card:not(#terminalCard), footer.spacer > *'));
-  revealEls.forEach(function(el){ el.classList.add('reveal-item'); });
-
-  function revealContent(instant){
-    revealEls.forEach(function(el, i){
-      if (instant) {
-        el.classList.add('instant', 'is-in');
-        return;
-      }
-      var delay = Math.min(i * 110, 550);
-      el.style.transitionDelay = delay + 'ms';
-    });
-    if (instant) return;
-    // double rAF so the transition-delay is committed before we flip opacity
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        revealEls.forEach(function(el){ el.classList.add('is-in'); });
-      });
-    });
-  }
-
   // ---- throttle: only show the animation once per hour ----
   var STORAGE_KEY = 'loaderLastShown';
   var COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
@@ -768,12 +746,9 @@
   var withinCooldown = lastShown && (now - lastShown) < COOLDOWN_MS;
 
   if (withinCooldown) {
-    // skip the big curtain/logo intro, but still give the page its subtle
-    // fade-up entrance so every load feels consistent, not just the first
-    // one per hour
+    // skip the big curtain/logo intro
     loader.classList.add('hide', 'hide-instant');
     loader.style.display = 'none';
-    revealContent(false);
     return;
   }
 
@@ -800,8 +775,6 @@
       requestAnimationFrame(function(){
         loader.classList.add('hide');
         lastCol.addEventListener('transitionend', done);
-        // content starts fading up right as the columns begin stepping up
-        setTimeout(function(){ revealContent(false); }, 150);
         // fallback in case transitionend doesn't fire (e.g. animations disabled)
         var totalMs = (COLS - 1) * COL_DELAY_MS + COL_DURATION_MS + 150;
         setTimeout(done, totalMs);
@@ -1184,29 +1157,6 @@
       window.refreshWorkTerminalIndex();
     }
 
-    // ---- fade the freshly-rendered grid in ----
-    // the header/intro already get a staggered fade-up once the loader
-    // curtain lifts (see the "reveal-item"/"is-in" classes in the LOADER
-    // SCRIPT below), but that script runs earlier in the document and
-    // snapshots its element list before content.json has finished loading —
-    // so the cards it builds never got included and just popped in with no
-    // transition. Reusing the same reveal-item/is-in classes here gives the
-    // grid the identical fade-up-and-in feel, just staggered by card order
-    // instead of by document order.
-    var gridCards = Array.prototype.slice.call(
-      document.querySelectorAll('#featuredProjectRow .card, #dynamicProjectRows .card')
-    );
-    gridCards.forEach(function(el){ el.classList.add('reveal-item'); });
-    // double rAF so the transition-delay is committed before we flip opacity
-    // (same technique the loader script uses for the same reason)
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        gridCards.forEach(function(el, i){
-          el.style.transitionDelay = Math.min(i * 110, 550) + 'ms';
-          el.classList.add('is-in');
-        });
-      });
-    });
   }
 
   fetch('content.json')
