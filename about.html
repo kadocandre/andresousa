@@ -395,14 +395,14 @@
 <!-- reveal-item/is-in classes (and reduced-motion handling) as index.html.   -->
 <script>
 (function(){
-  var els = Array.prototype.slice.call(document.querySelectorAll('header, .intro, main > *'));
+  var els = Array.prototype.slice.call(document.querySelectorAll('header, .intro, main > *, footer.spacer > *'));
   if (!els.length) return;
   els.forEach(function(el){ el.classList.add('reveal-item'); });
   // double rAF so the transition-delay is committed before we flip opacity
   requestAnimationFrame(function(){
     requestAnimationFrame(function(){
       els.forEach(function(el, i){
-        el.style.transitionDelay = Math.min(i * 70, 350) + 'ms';
+        el.style.transitionDelay = Math.min(i * 110, 550) + 'ms';
         el.classList.add('is-in');
       });
     });

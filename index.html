@@ -739,7 +739,7 @@
   }
 
   // ---- content reveal: page starts empty, fades up once the curtain lifts ----
-  var revealEls = [].slice.call(document.querySelectorAll('header, .intro, .card'));
+  var revealEls = [].slice.call(document.querySelectorAll('header, .intro, .card, footer.spacer > *'));
   revealEls.forEach(function(el){ el.classList.add('reveal-item'); });
 
   function revealContent(instant){
@@ -748,7 +748,7 @@
         el.classList.add('instant', 'is-in');
         return;
       }
-      var delay = Math.min(i * 70, 350);
+      var delay = Math.min(i * 110, 550);
       el.style.transitionDelay = delay + 'ms';
     });
     if (instant) return;
@@ -1202,7 +1202,7 @@
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         gridCards.forEach(function(el, i){
-          el.style.transitionDelay = Math.min(i * 70, 350) + 'ms';
+          el.style.transitionDelay = Math.min(i * 110, 550) + 'ms';
           el.classList.add('is-in');
         });
       });
