@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inconsolata:wdth,wght@112.5,600;112.5,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="media.js"></script>
 </head>
 <body class="page-work">
 
@@ -946,16 +947,6 @@
 (function(){
   var ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17L17 7"/><path d="M7 7H17V17"/></svg>';
 
-  // Converts a Google Drive "share" link (…/file/d/FILE_ID/view?usp=sharing)
-  // into a URL that can actually be used as an <img src>.
-  function driveImageUrl(url, size){
-    if (!url) return '';
-    var match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    var id = match ? match[1] : null;
-    if (!id) return url; // not a Drive share link — use as-is
-    return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w' + (size || 1000);
-  }
-
   function escapeHtml(str){
     return String(str == null ? '' : str).replace(/[&<>"']/g, function(ch){
       return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch];
@@ -966,7 +957,7 @@
   function cardMarkup(project, index, span){
     var title = escapeHtml(project.title);
     var role = escapeHtml(project.role);
-    var img = driveImageUrl(project.thumbnailimage);
+    var media = MediaEmbed.markup(project.thumbnailimage, project.title, { muted: true, loop: true, controls: false });
     var styleAttr = span && span > 1 ? ' style="grid-column: span ' + span + ';"' : '';
     // Single-slot grid cards (explicit span === 1) keep the thumbnail's original
     // aspect ratio (letterboxed, not cropped/stretched). The featured hero card
@@ -976,7 +967,7 @@
     return (
       '<a href="project.html?id=' + index + '" class="card project-card"' + styleAttr + ' data-project-index="' + index + '">' +
         '<div class="' + frameClass + '">' +
-          '<img src="' + escapeHtml(img) + '" alt="' + title + '" loading="lazy">' +
+          media +
         '</div>' +
         '<div class="card__info">' +
           '<p class="card__title">' + title + '<span class="card__arrow">' + ARROW_SVG + '</span></p>' +

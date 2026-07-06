@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inconsolata:wdth,wght@112.5,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="media.js"></script>
 </head>
 <body class="page-explore">
 
@@ -114,11 +115,6 @@ function svgTile(seed){
    stickers (decorative, no title, no click-to-zoom) come from
    "explorestickers" (image only). Google Drive "share" links get
    rewritten into a directly-loadable image URL. */
-function toDirectImageUrl(url){
-  const m = url && url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  return m ? ('https://lh3.googleusercontent.com/d/' + m[1]) : url;
-}
-
 let contentData = { exploreimages: [], explorestickers: [] };
 try{
   contentData = await fetch('content.json').then(r => r.json());
@@ -126,27 +122,21 @@ try{
   console.error('explore.html: could not load content.json', err);
 }
 
+// `image` is kept as the raw URL from content.json — MediaEmbed figures out
+// at render time whether it's a picture/GIF, a video file, or a
+// YouTube/Vimeo link, and builds the right tag (img/video/iframe).
 const pieces = (contentData.exploreimages || []).map(item => ({
   title: item.title || '',
-  image: toDirectImageUrl(item.image)
+  image: item.image || ''
 }));
 
 const stickers = (contentData.explorestickers || []).map(item => ({
-  src: toDirectImageUrl(item.image)
+  src: item.image || ''
 }));
 
-/* find each image's true width/height so tiles can be sized to match —
-   no cropping, no forced squares */
-function loadAspect(url){
-  return new Promise((resolve) => {
-    if(!url){ resolve(1); return; }
-    const img = new Image();
-    img.onload = () => resolve((img.naturalWidth && img.naturalHeight) ? (img.naturalWidth / img.naturalHeight) : 1);
-    img.onerror = () => resolve(1);
-    img.src = url;
-  });
-}
-await Promise.all(pieces.map(async (p) => { p.aspect = await loadAspect(p.image); }));
+/* find each image/video's true width/height so tiles can be sized to
+   match — no cropping, no forced squares */
+await Promise.all(pieces.map(async (p) => { p.aspect = await MediaEmbed.aspect(p.image); }));
 
 /* ---------------- board setup ---------------- */
 const board = document.getElementById('board');
@@ -246,11 +236,12 @@ pieces.forEach((p, i) => {
   el.style.setProperty('--rot', rot + 'deg');
   el.style.margin = '0';
   el.dataset.x = x; el.dataset.y = y; el.dataset.rot = rot;
-  const safeTitle = (p.title || '').replace(/"/g, '&quot;');
   const art = p.image
-    ? `<img src="${p.image}" alt="${safeTitle}" draggable="false">`
+    ? MediaEmbed.markup(p.image, p.title, { muted: true, loop: true, controls: false })
     : svgTile(i);
   el.innerHTML = art + `<figcaption>${p.title || ''}</figcaption>`;
+  const artEl = el.querySelector('img, video, iframe');
+  if (artEl) artEl.setAttribute('draggable', 'false');
   el.dataset.title = p.title || '';
   el.dataset.image = p.image || '';
   el.dataset.seed = i;
@@ -277,7 +268,9 @@ stickers.forEach((s) => {
   el.style.setProperty('--rot', rot + 'deg');
   el.style.margin = '0';
   el.dataset.x = x; el.dataset.y = y;
-  el.innerHTML = `<img src="${s.src}" alt="" draggable="false">`;
+  el.innerHTML = MediaEmbed.markup(s.src, '', { muted: true, loop: true, controls: false });
+  const stickerArt = el.querySelector('img, video, iframe');
+  if (stickerArt) stickerArt.setAttribute('draggable', 'false');
 
   board.appendChild(el);
   stickerEls.push(el);
@@ -677,9 +670,8 @@ function resetOverlayZoom(){
 
 function openZoom(el){
   const image = el.dataset.image;
-  const safeTitle = (el.dataset.title || '').replace(/"/g, '&quot;');
   overlayFrame.innerHTML = image
-    ? `<img src="${image}" alt="${safeTitle}">`
+    ? MediaEmbed.markup(image, el.dataset.title, { controls: true, muted: false })
     : svgTile(parseInt(el.dataset.seed));
   overlayCaption.textContent = el.dataset.title;
   resetOverlayZoom();

@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inconsolata:wdth,wght@112.5,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="media.js"></script>
 </head>
 <body class="page-project">
 
@@ -240,16 +241,6 @@
 <!-- quietly falls back to the static ânfora content already baked in above.  -->
 <script>
 (function(){
-  // Converts a Google Drive "share" link (…/file/d/FILE_ID/view?usp=sharing)
-  // into a URL that can actually be used as an <img src>.
-  function driveImageUrl(url, size){
-    if (!url) return '';
-    var match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    var id = match ? match[1] : null;
-    if (!id) return url; // not a Drive share link — use as-is
-    return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w' + (size || 1400);
-  }
-
   function escapeHtml(str){
     return String(str == null ? '' : str).replace(/[&<>"']/g, function(ch){
       return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch];
@@ -275,7 +266,7 @@
 
     var heroFigure = document.getElementById('heroFigure');
     if (heroFigure && project.overviewimage){
-      heroFigure.innerHTML = '<img src="' + escapeHtml(driveImageUrl(project.overviewimage)) + '" alt="' + escapeHtml(project.title) + '" loading="lazy">';
+      heroFigure.innerHTML = MediaEmbed.markup(project.overviewimage, project.title, { muted: true, loop: true, controls: true });
     }
 
     var overviewContainer = document.getElementById('overviewText');
@@ -298,8 +289,9 @@
     if (galleryGrid && Array.isArray(project.projectimages) && project.projectimages.length){
       galleryGrid.innerHTML = project.projectimages.map(function(img, idx){
         var wideClass = idx === 0 ? ' wide' : '';
+        var alt = (project.title || '') + ' — view ' + (idx + 1);
         return '<div class="gallery__item' + wideClass + '">' +
-          '<img src="' + escapeHtml(driveImageUrl(img)) + '" alt="' + escapeHtml(project.title) + ' — view ' + (idx + 1) + '" loading="lazy">' +
+          MediaEmbed.markup(img, alt, { muted: true, loop: true, controls: true }) +
         '</div>';
       }).join('');
     }

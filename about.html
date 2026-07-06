@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inconsolata:wdth,wght@112.5,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="media.js"></script>
 </head>
 <body class="page-about">
 
@@ -339,14 +340,6 @@
 <script>
   /* ---------- DYNAMIC ABOUT CONTENT (from content.json) ---------- */
   (function(){
-    /* content.json stores Google Drive "share" links (…/file/d/ID/view),
-       which can't be used directly as an <img> src. Convert to a
-       hotlinkable form using the file ID. */
-    function toDirectImageUrl(url){
-      var m = url && url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      return m ? ('https://lh3.googleusercontent.com/d/' + m[1]) : url;
-    }
-
     fetch('content.json')
       .then(function(res){ return res.json(); })
       .then(function(data){
@@ -357,14 +350,34 @@
           introEl.textContent = data.about[0].rightText;
         }
 
-        /* portrait / drawing-board background image — content.json "about" */
+        /* portrait / drawing-board background image — content.json "about".
+           Can be a picture, a GIF, a direct video file, or a YouTube/Vimeo
+           link — MediaEmbed picks the right element (img/video/iframe). The
+           drawing canvas sits on top either way, so swapping the element
+           doesn't affect the doodle tool. */
         var portraitImg = document.getElementById('portraitImage');
         if (portraitImg && Array.isArray(data.about) && data.about[0] && data.about[0].image) {
-          portraitImg.src = toDirectImageUrl(data.about[0].image);
-          portraitImg.onload = function(){ portraitImg.style.display = 'block'; };
-          portraitImg.onerror = function(){
-            console.warn('about.html: portrait image failed to load, showing placeholder');
-          };
+          var mediaInfo = MediaEmbed.resolve(data.about[0].image);
+          if (mediaInfo.type === 'image') {
+            portraitImg.src = mediaInfo.url;
+            portraitImg.onload = function(){ portraitImg.style.display = 'block'; };
+            portraitImg.onerror = function(){
+              console.warn('about.html: portrait image failed to load, showing placeholder');
+            };
+          } else {
+            // Video or embed — replace the <img> with the right element,
+            // keeping the same id/class so layout and the canvas overlay
+            // above it still line up.
+            var wrapper = document.createElement('div');
+            wrapper.innerHTML = MediaEmbed.markup(data.about[0].image, 'André Sousa', { className: 'portrait-img', muted: true, loop: true, controls: mediaInfo.type === 'video' });
+            var replacement = wrapper.firstElementChild;
+            if (replacement) {
+              replacement.id = 'portraitImage';
+              replacement.style.display = 'block';
+              portraitImg.replaceWith(replacement);
+              portraitImg = replacement;
+            }
+          }
         }
 
         /* bio / education / experience blocks — content.json "aboutmaintext" */
