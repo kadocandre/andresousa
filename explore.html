@@ -93,9 +93,10 @@ function playBounce(){ playTone(320, 0.09, 'triangle', 0.013); }
 
 /* ---------------- svg tile artwork ---------------- */
 function svgTile(seed){
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#f94730';
   const palettes = [
-    ['#1a1a1a','#eae9e6'], ['#e05a2b','#ffffff'], ['#eae9e6','#3a3a3a'],
-    ['#111111','#f0f0ee'], ['#c9c9c5','#1a1a1a'], ['#e05a2b','#111111']
+    ['#1a1a1a','#eae9e6'], [accent,'#ffffff'], ['#eae9e6','#3a3a3a'],
+    ['#111111','#f0f0ee'], ['#c9c9c5','#1a1a1a'], [accent,'#111111']
   ];
   const [bg,fg] = palettes[seed % palettes.length];
   const shapes = [
